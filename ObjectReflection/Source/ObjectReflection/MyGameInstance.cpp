@@ -2,6 +2,8 @@
 
 
 #include "MyGameInstance.h"
+#include "Student.h"
+#include "Teacher.h"
 
 UMyGameInstance::UMyGameInstance()
 {
@@ -28,5 +30,35 @@ void UMyGameInstance::Init()
 
 	UE_LOG(LogTemp, Log, TEXT("학교 이름 : %s"), *SchoolName);
 	UE_LOG(LogTemp, Log, TEXT("학교 이름 기본값: %s"), *GetClass()->GetDefaultObject<UMyGameInstance>()->SchoolName);
+	UE_LOG(LogTemp, Log, TEXT("====================="));
+
+	UStudent* Student = NewObject<UStudent>();
+	UTeacher* Teacher = NewObject<UTeacher>();
+	Student->SetName(TEXT("학생1"));
+	UE_LOG(LogTemp, Log, TEXT("새로운 학생 이름 : %s"), *Student->GetName());
+	
+
+	FString CurrentTeacherName;
+	FString NewTeacherName(TEXT("이득우"));
+	FProperty* NameProp = UTeacher::StaticClass()->FindPropertyByName(TEXT("Name"));
+	if (NameProp)
+	{
+		NameProp->GetValue_InContainer(Teacher, &CurrentTeacherName);
+		UE_LOG(LogTemp, Log, TEXT("현재 선생님 이름 : %s"), *CurrentTeacherName);
+
+		NameProp->SetValue_InContainer(Teacher, &NewTeacherName);
+		UE_LOG(LogTemp, Log, TEXT("새로운 선생님 이름 : %s"), *Teacher->GetName());
+	}
+
+	
+	UE_LOG(LogTemp, Log, TEXT("====================="));
+
+	Student->DoLesson();
+	UFunction* DoLessonFunc = Teacher->GetClass()->FindFunctionByName(TEXT("DoLesson"));
+	if (DoLessonFunc)
+	{
+		Teacher->ProcessEvent(DoLessonFunc, nullptr);
+	}
+
 	UE_LOG(LogTemp, Log, TEXT("====================="));
 }
